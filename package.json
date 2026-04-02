@@ -1,0 +1,65 @@
+{
+  "name": "@fimbul-works/seidr-random",
+  "description": "SSR-safe deterministic pseudo-random number generator for Seidr, based on the Alea algorithm",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "FimbulWorks <contact@fimbul.works>",
+  "homepage": "https://github.com/fimbul-works/seidr-random#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fimbul-works/seidr-random.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fimbul-works/seidr-random/issues"
+  },
+  "keywords": [
+    "seidr",
+    "random",
+    "prng",
+    "alea",
+    "ssr",
+    "deterministic",
+    "hydration",
+    "fimbulworks"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist/**/*.map",
+    "seidr-logo.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && tsdown",
+    "format": "npx biome format --write src",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@fimbul-works/seidr": "1.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.7",
+    "@fimbul-works/seidr": "link:../seidr",
+    "@types/node": "^25.5.0",
+    "tsdown": "^0.21.7",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
