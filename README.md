@@ -11,8 +11,8 @@ This function is stateful and deterministic within a render lifecycle. Unlike `M
 
 ## Features
 
-- 🎲 **SSR-safe seeding** - Deterministic during SSR/hydration for server-client sequence parity; entropy-seeded on the client otherwise.
 - 🔬 **High entropy** - Alea algorithm (Baagøe 2010); passes basic PRNG statistical tests.
+- 🎲 **SSR-safe seeding** - Deterministic during SSR/hydration for server-client sequence parity; entropy-seeded on the client otherwise.
 
 ## Installation
 

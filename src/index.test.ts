@@ -1,4 +1,6 @@
-import type { CleanupFunction } from "@fimbul-works/seidr";
+import { type CleanupFunction, hydrate } from "@fimbul-works/seidr";
+import { $div } from "@fimbul-works/seidr/html";
+import { renderToString } from "@fimbul-works/seidr/ssr";
 import {
   enableClientMode,
   enableSSRMode,
@@ -27,16 +29,20 @@ describe("random", () => {
     resetNextId();
   });
 
-  it("should return a number between 0 and 1", async () => {
+  it("should return a number between 0 and 1", () => {
     cleanup = enableClientMode();
-    const val = random();
-    expect(val).toBeGreaterThanOrEqual(0);
-    expect(val).toBeLessThan(1);
+
+    for (let i = 0; i < 1000; i++) {
+      const val = random();
+      expect(val).toBeGreaterThanOrEqual(0);
+      expect(val).toBeLessThan(1);
+    }
+
     cleanup();
   });
 
   it("should produce different values on subsequent calls in same context", async () => {
-    enableSSRMode();
+    cleanup = enableSSRMode();
 
     await runWithAppState(async () => {
       const r1 = random();
@@ -45,11 +51,11 @@ describe("random", () => {
       return [];
     });
 
-    enableClientMode();
+    cleanup();
   });
 
   it("should produce different values on subsequent calls in different contexts", async () => {
-    enableSSRMode();
+    cleanup = enableSSRMode();
 
     const results1 = await runWithAppState(async () => {
       const r1 = random();
@@ -65,23 +71,36 @@ describe("random", () => {
 
     expect(results1).not.toEqual(results2);
 
-    enableClientMode();
+    cleanup();
   });
 
   it("should match values between SSR and hydration when IDs match", async () => {
-    resetRequestIdCounter();
-    // 1. "Server" render
-    enableSSRMode();
-    const serverValues = await runWithAppState(async () => {
-      return [random(), random()];
+    // Server render
+    cleanup = enableSSRMode();
+    let serverResults: number[] = [];
+
+    const { hydrationData } = await renderToString(() => {
+      serverResults = [random(), random()];
+      return $div({});
     });
-    enableClientMode();
 
-    resetRequestIdCounter();
-    deleteRandomData();
+    cleanup();
 
-    const clientValues = [random(), random()];
+    // Client render
+    cleanup = enableClientMode();
+    let clientResults: number[] = [];
 
-    expect(clientValues).toEqual(serverValues);
+    hydrate(
+      () => {
+        clientResults = [random(), random()];
+        return $div({});
+      },
+      document.body,
+      hydrationData,
+    );
+
+    cleanup();
+
+    expect(clientResults).toEqual(serverResults);
   });
 });
